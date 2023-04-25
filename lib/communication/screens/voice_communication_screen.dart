@@ -1,9 +1,10 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+
+import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_sdk_engine/communication/logic/agora_av_manager/agora_av_manager_cubit.dart';
 import 'package:agora_sdk_engine/communication/logic/av_controller/av_controller_cubit.dart';
 import 'package:agora_sdk_engine/communication/model/agora_creds_model.dart';
 import 'package:agora_sdk_engine/communication/model/agora_engine_type_enum.dart';
-import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,10 +25,14 @@ class VoiceCommunicationScreen extends StatefulWidget {
 class _VoiceCommunicationScreenState extends State<VoiceCommunicationScreen> {
   final engine = createAgoraRtcEngine();
 
+  final agoraAvManagerCubit = AgoraAvManagerCubit();
+  late AvControllerCubit avControllerCubit;
   @override
   void initState() {
     super.initState();
-    context.read<AgoraAvManagerCubit>().initializeRTCEngine(engine,
+    avControllerCubit =
+        AvControllerCubit(agoraAvManagerCubit: agoraAvManagerCubit);
+    agoraAvManagerCubit.initializeRTCEngine(engine,
         agoraEngineType: AgoraEngineType.voice,
         agoraCredentialsModel: widget.agoraCredentialsModel);
   }
@@ -45,6 +50,7 @@ class _VoiceCommunicationScreenState extends State<VoiceCommunicationScreen> {
         title: const Text('Voice Call'),
       ),
       body: BlocBuilder<AgoraAvManagerCubit, AgoraAvManagerState>(
+        bloc: agoraAvManagerCubit,
         builder: (context, agoraAVstate) {
           if (agoraAVstate is AgoraAVEngineConencted) {
             return Stack(
@@ -78,6 +84,7 @@ class _VoiceCommunicationScreenState extends State<VoiceCommunicationScreen> {
                       : const CircularProgressIndicator(),
                 ),
                 BlocBuilder<AvControllerCubit, AvControllerState>(
+                  bloc: avControllerCubit,
                   builder: (context, avControllerstate) {
                     return Align(
                       alignment: Alignment.bottomCenter,
@@ -89,9 +96,7 @@ class _VoiceCommunicationScreenState extends State<VoiceCommunicationScreen> {
                             RawMaterialButton(
                               onPressed: () {
                                 HapticFeedback.lightImpact();
-                                context
-                                    .read<AvControllerCubit>()
-                                    .audioMuteUnmute();
+                                avControllerCubit.audioMuteUnmute();
                               },
                               shape: const CircleBorder(),
                               fillColor: avControllerstate.isAudioMuted

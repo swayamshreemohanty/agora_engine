@@ -1,9 +1,10 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+
+import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_sdk_engine/communication/logic/agora_av_manager/agora_av_manager_cubit.dart';
 import 'package:agora_sdk_engine/communication/logic/av_controller/av_controller_cubit.dart';
 import 'package:agora_sdk_engine/communication/model/agora_creds_model.dart';
 import 'package:agora_sdk_engine/communication/model/agora_engine_type_enum.dart';
-import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,11 +22,18 @@ class VideoCommunicationScreen extends StatefulWidget {
 }
 
 class _VideoCommunicationScreenState extends State<VideoCommunicationScreen> {
+
+
   final engine = createAgoraRtcEngine();
+
+  final agoraAvManagerCubit = AgoraAvManagerCubit();
+  late AvControllerCubit avControllerCubit;
   @override
   void initState() {
     super.initState();
-    context.read<AgoraAvManagerCubit>().initializeRTCEngine(engine,
+    avControllerCubit =
+        AvControllerCubit(agoraAvManagerCubit: agoraAvManagerCubit);
+    agoraAvManagerCubit.initializeRTCEngine(engine,
         agoraEngineType: AgoraEngineType.video,
         agoraCredentialsModel: widget.agoraCredentialsModel);
   }
@@ -44,6 +52,7 @@ class _VideoCommunicationScreenState extends State<VideoCommunicationScreen> {
         title: const Text('Video Call'),
       ),
       body: BlocBuilder<AgoraAvManagerCubit, AgoraAvManagerState>(
+        bloc: agoraAvManagerCubit,
         builder: (context, agoraAVstate) {
           if (agoraAVstate is AgoraAVEngineConencted) {
             return Stack(
@@ -66,6 +75,7 @@ class _VideoCommunicationScreenState extends State<VideoCommunicationScreen> {
                   child: Align(
                     alignment: Alignment.topLeft,
                     child: BlocBuilder<AvControllerCubit, AvControllerState>(
+                      bloc: avControllerCubit,
                       builder: (context, avControllerState) {
                         return Container(
                           decoration: BoxDecoration(
@@ -115,6 +125,7 @@ class _VideoCommunicationScreenState extends State<VideoCommunicationScreen> {
                     ),
                   ),
                 BlocBuilder<AvControllerCubit, AvControllerState>(
+                  bloc: avControllerCubit,
                   builder: (context, avControllerState) {
                     return Align(
                       alignment: Alignment.bottomCenter,
@@ -129,9 +140,7 @@ class _VideoCommunicationScreenState extends State<VideoCommunicationScreen> {
                                 RawMaterialButton(
                                   onPressed: () {
                                     HapticFeedback.lightImpact();
-                                    context
-                                        .read<AvControllerCubit>()
-                                        .videoToggle();
+                                    avControllerCubit.videoToggle();
                                   },
                                   shape: const CircleBorder(),
                                   fillColor: avControllerState.isVideoMuted
@@ -151,9 +160,7 @@ class _VideoCommunicationScreenState extends State<VideoCommunicationScreen> {
                                 RawMaterialButton(
                                   onPressed: () {
                                     HapticFeedback.lightImpact();
-                                    context
-                                        .read<AvControllerCubit>()
-                                        .audioMuteUnmute();
+                                    avControllerCubit.audioMuteUnmute();
                                   },
                                   shape: const CircleBorder(),
                                   fillColor: avControllerState.isAudioMuted
