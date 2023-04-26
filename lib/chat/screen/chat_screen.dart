@@ -17,10 +17,12 @@ class ChatScreenState extends State<ChatScreen> {
   final clientIdTextController = TextEditingController();
   ScrollController scrollController = ScrollController();
 
+  final agoraChatManagerCubit = AgoraChatManagerCubit();
+
   @override
   void initState() {
     super.initState();
-    context.read<AgoraChatManagerCubit>().initSDK();
+   agoraChatManagerCubit.initSDK();
   }
 
   @override
@@ -52,7 +54,7 @@ class ChatScreenState extends State<ChatScreen> {
                   flex: 1,
                   child: TextButton(
                     onPressed: () =>
-                        context.read<AgoraChatManagerCubit>().signIn(),
+                       agoraChatManagerCubit.signIn(),
                     style: ButtonStyle(
                       foregroundColor: MaterialStateProperty.all(Colors.white),
                       backgroundColor:
@@ -65,7 +67,7 @@ class ChatScreenState extends State<ChatScreen> {
                 Expanded(
                   child: TextButton(
                     onPressed: () =>
-                        context.read<AgoraChatManagerCubit>().signOut(),
+                       agoraChatManagerCubit.signOut(),
                     style: ButtonStyle(
                       foregroundColor: MaterialStateProperty.all(Colors.white),
                       backgroundColor:
@@ -85,6 +87,7 @@ class ChatScreenState extends State<ChatScreen> {
             ),
             Expanded(
               child: BlocConsumer<AgoraChatManagerCubit, AgoraChatManagerState>(
+                bloc: agoraChatManagerCubit,
                 listener: (context, state) {
                   scrollController
                       .jumpTo(scrollController.position.maxScrollExtent);
@@ -112,7 +115,7 @@ class ChatScreenState extends State<ChatScreen> {
                   );
                   return;
                 }
-                context.read<AgoraChatManagerCubit>().sendMessage(
+               agoraChatManagerCubit.sendMessage(
                     message: message,
                     receiverId: clientIdTextController.text.trim());
               },
