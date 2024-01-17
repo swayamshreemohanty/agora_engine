@@ -13,9 +13,9 @@ class VoiceCommunicationScreen extends StatefulWidget {
   final AgoraCredentialsModel agoraCredentialsModel;
 
   const VoiceCommunicationScreen({
-    Key? key,
+    super.key,
     required this.agoraCredentialsModel,
-  }) : super(key: key);
+  });
 
   @override
   State<VoiceCommunicationScreen> createState() =>

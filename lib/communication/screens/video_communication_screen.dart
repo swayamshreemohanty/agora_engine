@@ -12,9 +12,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class VideoCommunicationScreen extends StatefulWidget {
   final AgoraCredentialsModel agoraCredentialsModel;
   const VideoCommunicationScreen({
-    Key? key,
+    super.key,
     required this.agoraCredentialsModel,
-  }) : super(key: key);
+  });
 
   @override
   State<VideoCommunicationScreen> createState() =>
@@ -22,8 +22,6 @@ class VideoCommunicationScreen extends StatefulWidget {
 }
 
 class _VideoCommunicationScreenState extends State<VideoCommunicationScreen> {
-
-
   final engine = createAgoraRtcEngine();
 
   final agoraAvManagerCubit = AgoraAvManagerCubit();
